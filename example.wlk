@@ -109,9 +109,12 @@ class MisionPorEquipo inherits Mision{
 
   override method cantidadCopas() = 50 / personajes.size()
 
+  method mitadParticipantes() = personajes.size() / 2
+  method personajesConEstrategia() = personajes.count({x => x.tieneEstrategia()})
+
 // Y pueden ser superadas cuando más de la mitad de los participantes tienen estrategia, 
 // o bien, cada uno tiene una destreza mayor a 400.
-  override method tieneEstrategiaSuficiente() = personajes.size() < personajes.count({x => x.tieneEstrategia()}) 
+  override method tieneEstrategiaSuficiente() = self.mitadParticipantes() < self.personajesConEstrategia()  
   override method tieneDestrezaSuficiente() = personajes.all({x => x.destreza() > 400}) 
 
   override method puedeComenzarMision() = personajes.sum({x => x.copasGanadas()}) >= 60
