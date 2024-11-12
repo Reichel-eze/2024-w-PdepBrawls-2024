@@ -4,10 +4,18 @@ import example.*
 // que prueba que una misión individual fue superada. Se espera un test bien nombrado
 // por cada clase de equivalencia.
 
-describe "Test de mision individual" {
+describe "Tests de mision individual" {
+
+    // Una mision Individual puede superarse cuando:
+    // - Cuando el personaje tiene estrategia
+    // - Cuando el personaje tiene una destreza mayor a la dificultad de la mision
+
     const ezequiel = new Arquero(copasGanadas = 11, agilidad = 5, rango = 120)
     const aurelio = new Guerrera(copasGanadas = 11, tieneEstrategia = true, fuerza = 100)
     const marcela = new Ballestero(copasGanadas = 11, agilidad = 2, rango = 40)
+    const pepe = new Guerrera(copasGanadas = 11, tieneEstrategia = true, fuerza = 2)    // tiene estrategia
+    const laura = new Guerrera(copasGanadas = 11, tieneEstrategia = false, fuerza = 50) // NO tiene estrategia
+    const fede = new Guerrera(copasGanadas = 11, tieneEstrategia = false, fuerza = 1)   // NO tiene estrategia 
 
   test "Un arquero puede superar una mision indivual de tipo comun de 5 de dificultad, ganando copas al respecto " {
     const mision1 = new MisionIndividual(tipoDeMisionAdicion = misionComun, personaje = ezequiel, dificultad = 5)
@@ -30,5 +38,22 @@ describe "Test de mision individual" {
     const misionNoSuperada = new MisionIndividual(tipoDeMisionAdicion = misionComun, personaje = marcela, dificultad = 99999)
     assert.notThat(misionNoSuperada.puedeSerSuperada())
   }  
+
+// --------------------------------------------------------------------------
+
+  test "Una mision individual es superada cuando el personaje tiene estrategia (sin importar la destreza del mismo)" {
+    const mision2 = new MisionIndividual(tipoDeMisionAdicion = misionComun, personaje = pepe, dificultad = 10)
+    assert.that(mision2.puedeSerSuperada())
+  }
+
+  test "Una mision individual es superada cuando el personaje tiene una destreza que supera la dificultad de la mision (sin importar si tiene o no estrategia el personaje)" {
+    const mision3 = new MisionIndividual(tipoDeMisionAdicion = misionComun, personaje = laura, dificultad = 10)
+    assert.that(mision3.puedeSerSuperada())
+  }
+
+  test "Una mision indivual NO es superada cuando el personaje no tiene la destreza suficiente (tampoco tiene estrategia)" {
+    const mision4 = new MisionIndividual(tipoDeMisionAdicion = misionComun, personaje = fede, dificultad = 20)
+    assert.notThat(mision4.puedeSerSuperada())  
+  }
 
 }

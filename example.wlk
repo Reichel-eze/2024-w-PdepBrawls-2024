@@ -153,3 +153,13 @@ object misionBonus {
 object misionComun {
   method cantCopas(mision) = mision.cantidadCopasBase() // NO tiene ningun agregado, me devuelve la base!!
 }
+
+// 5) ¿En qué lugar de tu solución aparece el polimorfismo? 
+// Justificar marcando objetos polimórficos y quién se aprovecha del polimorfismo.
+
+// Polimorfimo NO es lo mismo que Herencia
+// Polimorfismo = trato indistinto de uno o mas objetos por un tercero 
+
+// En este codigo, se utiliza el polimorfismo:
+// - 
+// - cantidadCopas() en Mision, porque no distingue cual es el tipo de mision adicion que tiene
