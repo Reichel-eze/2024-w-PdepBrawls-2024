@@ -1,1 +1,34 @@
 import example.*
+
+// Escribir los tests necesarios para probar el correcto funcionamiento del código
+// que prueba que una misión individual fue superada. Se espera un test bien nombrado
+// por cada clase de equivalencia.
+
+describe "Test de mision individual" {
+    const ezequiel = new Arquero(copasGanadas = 11, agilidad = 5, rango = 120)
+    const aurelio = new Guerrera(copasGanadas = 11, tieneEstrategia = true, fuerza = 100)
+    const marcela = new Ballestero(copasGanadas = 11, agilidad = 2, rango = 40)
+
+  test "Un arquero puede superar una mision indivual de tipo comun de 5 de dificultad, ganando copas al respecto " {
+    const mision1 = new MisionIndividual(tipoDeMisionAdicion = misionComun, personaje = ezequiel, dificultad = 5)
+    mision1.realizarMisionV2()
+    assert.that(ezequiel.copasGanadas() > 11)
+    assert.equals(21, ezequiel.copasGanadas())
+  }
+
+  test "Una mision individual es superada" {
+    const unaMisionIndivual = new MisionIndividual(tipoDeMisionAdicion = misionComun, personaje = ezequiel, dificultad = 100)
+    assert.that(unaMisionIndivual.puedeSerSuperada())
+  }
+
+  test "Cantidad de copas de una misión con boost se multiplica por el multiplicador" {
+    const otraMisionInd = new MisionIndividual(tipoDeMisionAdicion = new MisionBoost(multiplicador = 2), personaje = aurelio, dificultad = 5)
+    assert.equals(20, otraMisionInd.cantidadCopas())
+  }  
+
+  test "Mision no es superada" {
+    const misionNoSuperada = new MisionIndividual(tipoDeMisionAdicion = misionComun, personaje = marcela, dificultad = 99999)
+    assert.notThat(misionNoSuperada.puedeSerSuperada())
+  }  
+
+}

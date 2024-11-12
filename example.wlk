@@ -5,7 +5,7 @@ que los personajes ganen o pierdan copas.
 */
 
 class Personaje {
-  var copasGanadas = 0
+  var property copasGanadas = 0
 
   method sumarCopas(cantidad) {
     copasGanadas += cantidad
@@ -30,8 +30,8 @@ class Arquero inherits Personaje {
   method tieneEstrategia() = rango > 100
 }
 
-class Guerrerra inherits Personaje {
-  var tieneEstrategia // hay guerreras que tienen estratria y guerreras que NO (por lo tanto es una variable)
+class Guerrera inherits Personaje {
+  var tieneEstrategia // hay guerreras que tienen estrategia y guerreras que NO (por lo tanto es una variable)
   var fuerza
 
   method destreza() = 1.5 * fuerza    // su destreza es 50% mas que su fuerza 
@@ -43,9 +43,15 @@ class Ballestero inherits Arquero {
 }
 
 class Mision {
-  method cantidadCopas()
+  var tipoDeMisionAdicion   // "Tener en cuenta que puede haber misiones comunes, Boost y Bonus tanto por equipo como individuales"
+  
+  method cantidadCopasBase() 
+  
+  method cantidadCopas() = tipoDeMisionAdicion.cantCopas(self)   // para calcular la cantidad de copas, le paso la pelota al tipo de Mision...
 
-  method puedeSerSuperadaPor() = self.tieneEstrategiaSuficiente() || self.tieneDestrezaSuficiente() // ambas misiones analizan la estrategia o destreza del/los personaje/s
+  method cantidadParticipantes()
+
+  method puedeSerSuperada() = self.tieneEstrategiaSuficiente() || self.tieneDestrezaSuficiente() // ambas misiones analizan la estrategia o destreza del/los personaje/s
 
   method tieneEstrategiaSuficiente()  // metodo abstracto (cada subclase de mision implementa su comportamiento segun la estrategia del personaje)
   method tieneDestrezaSuficiente()    // metodo abstracto (cada subclase de mision implementa su comportamiento segun la destreza del personaje)
@@ -54,7 +60,7 @@ class Mision {
     if(!self.puedeComenzarMision()) {   // si no puede comenzar la mision, lanzo una excepcion!!
       throw new DomainException(message="Misión no puede comenzar")
     }
-    if(self.puedeSerSuperadaPor()) self.recibirCopas() else self.quitarCopas()
+    if(self.puedeSerSuperada()) self.recibirCopas() else self.quitarCopas()
   }
 
   // Podria hacer la validacion de si puede comenzar la validacion en una funcion aparte V2
@@ -70,8 +76,8 @@ class Mision {
     }
   }
 
-  method repartirCopas() 
-  method sumarORestar() = if(self.puedeSerSuperadaPor()) 1 else -1
+  method repartirCopas() // metodo abstracto
+  method sumarORestar() = if(self.puedeSerSuperada()) 1 else -1
 
   // -----------------------------------------------------------------------------------------
 
@@ -86,7 +92,9 @@ class MisionIndividual inherits Mision {
   var personaje
   var dificultad 
 
-  override method cantidadCopas() = 2 * dificultad  
+  override method cantidadCopasBase() = 2 * dificultad  
+
+  override method cantidadParticipantes() = 1   // solo tiene un participante
 
 // y puede ser superada cuando el personaje tiene estrategia 
 //o bien cuando su destreza supera la dificultad de la misión.
@@ -107,7 +115,9 @@ class MisionIndividual inherits Mision {
 class MisionPorEquipo inherits Mision{
   const personajes = []
 
-  override method cantidadCopas() = 50 / personajes.size()
+  override method cantidadCopasBase() = 50 / personajes.size()
+
+  override method cantidadParticipantes() = personajes.size()   // la cantidad es el size()
 
   method mitadParticipantes() = personajes.size() / 2
   method personajesConEstrategia() = personajes.count({x => x.tieneEstrategia()})
@@ -126,4 +136,20 @@ class MisionPorEquipo inherits Mision{
   // metodo mas general (recibir o quitar copas)
   override method repartirCopas() {personajes.forEach({x => x.darCopas(self.cantidadCopas() * self.sumarORestar())})} // el sumar o restar seria un 1 o -1 (segun si suma po resta la cantidad de copas)
 
+}
+
+// PUNTO 3)
+
+class MisionBoost { 
+  var multiplicador  // es una class porque tiene variables ("Cada una de las misiones Boost tiene un multiplicador")
+  
+  method cantCopas(mision) = multiplicador * mision.cantidadCopasBase()
+}
+
+object misionBonus {
+  method cantCopas(mision) = mision.cantidadParticipantes() + mision.cantidadCopasBase()  
+}
+
+object misionComun {
+  method cantCopas(mision) = mision.cantidadCopasBase() // NO tiene ningun agregado, me devuelve la base!!
 }
